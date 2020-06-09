@@ -40,9 +40,12 @@ build_uboot() {
 }
 
 prepare_release() {
+  mkdir "release"
+  pushd "release"
   mkdir "${platform_name}-uboot-${uboot_version}-atf-${atf_version}"
   cp "../u-boot-${uboot_version}/u-boot-sunxi-with-spl.bin" "${platform_name}-mainline-uboot-${uboot_version}-atf-${atf_version}"
   tar -cJf "${platform_name}-mainline-uboot-${uboot_version}-atf-${atf_version}.tar.xz" "${platform_name}-mainline-uboot-${uboot_version}-atf-${atf_version}"
+  popd
 }
 
 [[ -n "${1}" ]] && "${1}"
