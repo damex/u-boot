@@ -43,7 +43,9 @@ prepare_release() {
   mkdir -p "release"
   pushd "release"
   mkdir "${platform_name}-uboot-${uboot_version}-atf-${atf_version}"
-  cp "../u-boot-${uboot_version}/${uboot_build_binary}" "${platform_name}-uboot-${uboot_version}-atf-${atf_version}"
+  for uboot_build_binary in "${uboot_build_binaries[@]}" ; do
+    cp "../u-boot-${uboot_version}/${uboot_build_binary}" "${platform_name}-uboot-${uboot_version}-atf-${atf_version}"
+  done
   tar -cJf "${platform_name}-uboot-${uboot_version}-atf-${atf_version}.tar.xz" "${platform_name}-uboot-${uboot_version}-atf-${atf_version}"
   popd
 }

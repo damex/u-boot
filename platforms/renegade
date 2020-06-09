@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+uboot_version="2020.07-rc4"
+atf_platform="rk3328"
+atf_build_binary="build/${atf_platform}/release/bl31/bl31.elf"
+uboot_config="roc-cc-rk3328_defconfig"
+uboot_build_binaries=("idbloader.img" "u-boot.itb")
