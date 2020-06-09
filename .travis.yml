@@ -22,7 +22,6 @@ jobs:
             - device-tree-compiler
             - swig
       script:
-        - mkdir -p release/tritium-mainline-uboot-${uboot_version}-atf-${atf_version}
         - curl -L https://github.com/ARM-software/arm-trusted-firmware/archive/v${atf_version}.tar.gz -o atf-${atf_version}.tar.gz
         - tar xpf atf-${atf_version}.tar.gz
         - pushd arm-trusted-firmware-${atf_version}
@@ -33,9 +32,11 @@ jobs:
         - pushd u-boot-${uboot_version}
         - make libretech_all_h3_cc_h5_defconfig
         - BL31="../arm-trusted-firmware-${atf_version}/build/sun50i_a64/release/bl31.bin" make
-        - cp u-boot-sunxi-with-spl.bin ../tritium-mainline-uboot-${uboot_version}-atf-${atf_version}
+        - cp u-boot-sunxi-with-spl.bin ../release/tritium-mainline-uboot-${uboot_version}-atf-${atf_version}
         - popd
         - pushd release
+        - mkdir tritium-mainline-uboot-${uboot_version}-atf-${atf_version}
+        - cp ../u-boot-${uboot_version}/u-boot-sunxi-with-spl.bin tritium-mainline-uboot-${uboot_version}-atf-${atf_version}
         - tar -cJf tritium-mainline-uboot-${uboot_version}-atf-${atf_version}.tar.xz tritium-mainline-uboot-${uboot_version}-atf-${atf_version}
         - popd
       deploy:
