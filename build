@@ -1,19 +1,28 @@
 #!/usr/bin/env bash
 
-: "${uboot_version:=2020.04}"
+die() {
+  echo "${*}" 1>&2
+  exit 1
+}
+
 : "${atf_version:=2.3}"
+: "${atf_platform:=""}"
+: "${atf_build_binary:=""}"
+: "${uboot_version:=2020.04}"
+: "${uboot_config:=""}"
+: "${uboot_build_binaries:=""}"
+: "${platform_name:=""}"
 
 [[ -z "${platform_name}" ]] && echo "Please define a platform_name." && exit 1
 
 if [[ -f "platforms/${platform_name}" ]] ; then
+  # shellcheck source=platforms
   source "platforms/${platform_name}"
   if [[ -z "${uboot_config}" ]] ; then
-    echo "Platform configuration is incomplete."
-    exit 1
+    die "Platform configuration is incomplete."
   fi
 else
-  echo "Platform configuration does no exist."
-  exit 1
+  die "Platform configuration does no exist."
 fi
 
 prepare_atf() {
@@ -32,15 +41,15 @@ prepare_uboot() {
 
 build_atf() {
   if [[ -n "${atf_platform}" ]] ; then
-    pushd "arm-trusted-firmware-${atf_version}"
+    pushd "arm-trusted-firmware-${atf_version}" || die
     make distclean
     make PLAT="${atf_platform}" bl31
-    popd
+    popd || die
   fi
 }
 
 build_uboot() {
-  pushd "u-boot-${uboot_version}"
+  pushd "u-boot-${uboot_version}" || die
   make distclean
   make "${uboot_config}"
   if [[ -n "${atf_build_binary}" ]] ; then
@@ -48,12 +57,12 @@ build_uboot() {
   else
     make
   fi
-  popd
+  popd || die
 }
 
 prepare_release() {
   mkdir -p "release"
-  pushd "release"
+  pushd "release" || die
   if [[ -n "${atf_platform}" ]] ; then
     release_directory="${platform_name}-uboot-${uboot_version}-atf-${atf_version}"
   else
@@ -65,7 +74,7 @@ prepare_release() {
     cp "../u-boot-${uboot_version}/${uboot_build_binary}" "${release_directory}"
   done
   tar -cJf "${release_archive}" "${release_directory}"
-  popd
+  popd || die
 }
 
 if [[ -n "${1}" ]] ; then
