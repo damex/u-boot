@@ -36,7 +36,7 @@ jobs:
         - cp u-boot-sunxi-with-spl.bin ../tritium-mainline-uboot-${uboot_version}-atf-${atf_version}
         - popd
         - pushd release
-        - tar -cJf renegade-mainline-uboot-${uboot_version}-atf-${atf_version}.tar.xz renegade-mainline-uboot-${uboot_version}-atf-${atf_version}
+        - tar -cJf tritium-mainline-uboot-${uboot_version}-atf-${atf_version}.tar.xz tritium-mainline-uboot-${uboot_version}-atf-${atf_version}
         - popd
     - stage: upload to github
       script: skip
