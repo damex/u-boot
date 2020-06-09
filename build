@@ -17,13 +17,13 @@ else
 fi
 
 prepare_atf() {
-  curl -L https://github.com/u-boot/u-boot/archive/v${uboot_version}.tar.gz -o u-boot-${uboot_version}.tar.gz
-  tar xpf u-boot-${uboot_version}.tar.gz
+  curl -L https://github.com/ARM-software/arm-trusted-firmware/archive/v${atf_version}.tar.gz -o atf-${atf_version}.tar.gz
+  tar xpf atf-${atf_version}.tar.gz
 }
 
 prepare_uboot() {
-  curl -L https://github.com/ARM-software/arm-trusted-firmware/archive/v${atf_version}.tar.gz -o atf-${atf_version}.tar.gz
-  tar xpf atf-${atf_version}.tar.gz
+  curl -L https://github.com/u-boot/u-boot/archive/v${uboot_version}.tar.gz -o u-boot-${uboot_version}.tar.gz
+  tar xpf u-boot-${uboot_version}.tar.gz
 }
 
 build_atf() {
