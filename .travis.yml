@@ -19,12 +19,8 @@ addons:
       - device-tree-compiler
       - swig
 script:
-  - export platform_name="tritium"
-  - ./build prepare_atf
-  - ./build build_atf
-  - ./build prepare_uboot
-  - ./build build_uboot
-  - ./build prepare_release
+  - platform_name="renegade" ./build
+  - platform_name="tritium" ./build
 deploy:
   provider: releases
   api_key:

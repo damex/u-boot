@@ -17,23 +17,29 @@ else
 fi
 
 prepare_atf() {
-  curl -L https://github.com/ARM-software/arm-trusted-firmware/archive/v${atf_version}.tar.gz -o atf-${atf_version}.tar.gz
-  tar xpf atf-${atf_version}.tar.gz
+  if [[ ! -f "atf-${atf_version}.tar.gz" ]] ; then
+    curl -L https://github.com/ARM-software/arm-trusted-firmware/archive/v${atf_version}.tar.gz -o atf-${atf_version}.tar.gz
+    tar xpf atf-${atf_version}.tar.gz
+  fi
 }
 
 prepare_uboot() {
-  curl -L https://github.com/u-boot/u-boot/archive/v${uboot_version}.tar.gz -o u-boot-${uboot_version}.tar.gz
-  tar xpf u-boot-${uboot_version}.tar.gz
+  if [[ ! -f "u-boot-${uboot_version}.tar.gz" ]] ; then
+    curl -L https://github.com/u-boot/u-boot/archive/v${uboot_version}.tar.gz -o u-boot-${uboot_version}.tar.gz
+    tar xpf u-boot-${uboot_version}.tar.gz
+  fi
 }
 
 build_atf() {
   pushd "arm-trusted-firmware-${atf_version}"
+  make distclean
   make PLAT="${atf_platform}" bl31
   popd
 }
 
 build_uboot() {
   pushd "u-boot-${uboot_version}"
+  make distclean
   make "${uboot_config}"
   BL31="../arm-trusted-firmware-${atf_version}/${atf_build_binary}" make
   popd
@@ -50,4 +56,12 @@ prepare_release() {
   popd
 }
 
-[[ -n "${1}" ]] && "${1}"
+if [[ -n "${1}" ]] ; then
+  "${1}"
+else
+  prepare_atf
+  build_atf
+  prepare_uboot
+  build_uboot
+  prepare_release
+fi
