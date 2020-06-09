@@ -1,6 +1,0 @@
-#!/usr/bin/env bash
-
-atf_platform="gxl"
-atf_build_binary=""
-uboot_config="libretech-cc_defconfig"
-uboot_build_binaries=("u-boot.bin")

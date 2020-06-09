@@ -1,59 +1,87 @@
 #!/usr/bin/env bash
 
+: "${platform_name:=""}"
+: "${atf_version:=2.3}"
+: "${uboot_version:=2020.04}"
+
+declare -A atf_version
+declare -A atf_platform
+declare -A atf_build_binary
+declare -A uboot_version
+declare -A uboot_config
+declare -A uboot_build_binaries
+
+atf_version["raspberrypi3"]=""
+atf_platform["raspberrypi3"]=""
+atf_build_binary["raspberrypi3"]=""
+uboot_version["raspberrypi3"]="${uboot_version}"
+uboot_config["raspberrypi3"]="rpi_3_defconfig"
+uboot_build_binaries["raspberrypi3"]="u-boot.bin"
+
+atf_version["raspberrypi4"]=""
+atf_platform["raspberrypi4"]=""
+atf_build_binary["raspberrypi4"]=""
+uboot_version["raspberrypi4"]="${uboot_version}"
+uboot_config["raspberrypi4"]="rpi_4_defconfig"
+uboot_build_binaries["raspberrypi4"]="u-boot.bin"
+
+atf_version["lepotato"]="${atf_version}"
+atf_platform["lepotato"]="gxl"
+atf_build_binary["lepotato"]=""
+uboot_version["lepotato"]="${uboot_version}"
+uboot_config["lepotato"]="libretech-cc_defconfig"
+uboot_build_binaries["lepotato"]="u-boot.bin"
+
+atf_version["renegade"]="${atf_version}"
+atf_platform["renegade"]="rk3328"
+atf_build_binary["renegade"]="build/${atf_platform["renegade"]}/release/bl31/bl31.elf"
+uboot_version["renegade"]="2020.07-rc4"
+uboot_config["renegade"]="roc-cc-rk3328_defconfig"
+uboot_build_binaries["renegade"]="idbloader.img u-boot.itb"
+
+atf_version["tritium"]="${atf_version}"
+atf_platform["tritium"]="sun50i_a64"
+atf_build_binary["tritium"]="build/${atf_platform["tritium"]}/release/bl31.bin"
+uboot_version["tritium"]="${uboot_version}"
+uboot_config["tritium"]="libretech_all_h3_cc_h5_defconfig"
+uboot_build_binaries["tritium"]="u-boot-sunxi-with-spl.bin"
+
 die() {
   echo "${*}" 1>&2
   exit 1
 }
 
-: "${atf_version:=2.3}"
-: "${atf_platform:=""}"
-: "${atf_build_binary:=""}"
-: "${uboot_version:=2020.04}"
-: "${uboot_config:=""}"
-: "${uboot_build_binaries:=""}"
-: "${platform_name:=""}"
-
-[[ -z "${platform_name}" ]] && echo "Please define a platform_name." && exit 1
-
-if [[ -f "platforms/${platform_name}" ]] ; then
-  # shellcheck source=platforms
-  source "platforms/${platform_name}"
-  if [[ -z "${uboot_config}" ]] ; then
-    die "Platform configuration is incomplete."
-  fi
-else
-  die "Platform configuration does no exist."
-fi
+[[ -z "${platform_name}" ]] && die "Please define a platform_name."
 
 prepare_atf() {
-  if [[ ! -f "atf-${atf_version}.tar.gz" ]] ; then
-    curl -L https://github.com/ARM-software/arm-trusted-firmware/archive/v${atf_version}.tar.gz -o atf-${atf_version}.tar.gz
-    tar xpf atf-${atf_version}.tar.gz
+  if [[ -n "${atf_version["${platform_name}"]}" ]] && [[ ! -f "atf-${atf_version["${platform_name}"]}.tar.gz" ]] ; then
+    curl -L https://github.com/ARM-software/arm-trusted-firmware/archive/v${atf_version["${platform_name}"]}.tar.gz -o atf-${atf_version["${platform_name}"]}.tar.gz
+    tar xpf "atf-${atf_version["${platform_name}"]}.tar.gz"
   fi
 }
 
 prepare_uboot() {
-  if [[ ! -f "u-boot-${uboot_version}.tar.gz" ]] ; then
-    curl -L https://github.com/u-boot/u-boot/archive/v${uboot_version}.tar.gz -o u-boot-${uboot_version}.tar.gz
-    tar xpf u-boot-${uboot_version}.tar.gz
+  if [[ ! -f "u-boot-${uboot_version["${platform_name}"]}.tar.gz" ]] ; then
+    curl -L https://github.com/u-boot/u-boot/archive/v${uboot_version["${platform_name}"]}.tar.gz -o u-boot-${uboot_version["${platform_name}"]}.tar.gz
+    tar xpf "u-boot-${uboot_version["${platform_name}"]}.tar.gz"
   fi
 }
 
 build_atf() {
-  if [[ -n "${atf_platform}" ]] ; then
-    pushd "arm-trusted-firmware-${atf_version}" || die
+  if [[ -n "${atf_platform["${platform_name}"]}" ]] ; then
+    pushd "arm-trusted-firmware-${atf_version["${platform_name}"]}" || die
     make distclean
-    make PLAT="${atf_platform}" bl31
+    make PLAT="${atf_platform["${platform_name}"]}" bl31
     popd || die
   fi
 }
 
 build_uboot() {
-  pushd "u-boot-${uboot_version}" || die
+  pushd "u-boot-${uboot_version["${platform_name}"]}" || die
   make distclean
-  make "${uboot_config}"
-  if [[ -n "${atf_build_binary}" ]] ; then
-    BL31="../arm-trusted-firmware-${atf_version}/${atf_build_binary}" make
+  make "${uboot_config["${platform_name}"]}"
+  if [[ -n "${atf_build_binary["${platform_name}"]}" ]] ; then
+    BL31="../arm-trusted-firmware-${atf_version["${platform_name}"]}/${atf_build_binary["${platform_name}"]}" make
   else
     make
   fi
@@ -63,15 +91,15 @@ build_uboot() {
 prepare_release() {
   mkdir -p "release"
   pushd "release" || die
-  if [[ -n "${atf_platform}" ]] ; then
-    release_directory="${platform_name}-uboot-${uboot_version}-atf-${atf_version}"
+  if [[ -n "${atf_platform["${platform_name}"]}" ]] ; then
+    release_directory="${platform_name}-uboot-${uboot_version["${platform_name}"]}-atf-${atf_version["${platform_name}"]}"
   else
-    release_directory="${platform_name}-uboot-${uboot_version}"
+    release_directory="${platform_name}-uboot-${uboot_version["${platform_name}"]}"
   fi
   release_archive="${release_directory}.tar.xz"
   mkdir "${release_directory}"
-  for uboot_build_binary in "${uboot_build_binaries[@]}" ; do
-    cp "../u-boot-${uboot_version}/${uboot_build_binary}" "${release_directory}"
+  for uboot_build_binary in ${uboot_build_binaries["${platform_name}"]} ; do
+    cp "../u-boot-${uboot_version["${platform_name}"]}/${uboot_build_binary}" "${release_directory}"
   done
   tar -cJf "${release_archive}" "${release_directory}"
   popd || die

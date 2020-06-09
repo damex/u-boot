@@ -1,6 +1,0 @@
-#!/usr/bin/env bash
-
-atf_platform=""
-atf_build_binary=""
-uboot_config="rpi_4_defconfig"
-uboot_build_binaries=("u-boot.bin")
