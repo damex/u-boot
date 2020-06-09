@@ -32,7 +32,6 @@ jobs:
         - pushd u-boot-${uboot_version}
         - make libretech_all_h3_cc_h5_defconfig
         - BL31="../arm-trusted-firmware-${atf_version}/build/sun50i_a64/release/bl31.bin" make
-        - cp u-boot-sunxi-with-spl.bin ../release/tritium-mainline-uboot-${uboot_version}-atf-${atf_version}
         - popd
         - mkdir release
         - pushd release
