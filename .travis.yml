@@ -19,6 +19,7 @@ addons:
       - device-tree-compiler
       - swig
 script:
+  - platform_name="lepotato" ./build
   - platform_name="renegade" ./build
   - platform_name="tritium" ./build
 deploy:

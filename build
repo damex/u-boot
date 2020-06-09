@@ -41,7 +41,11 @@ build_uboot() {
   pushd "u-boot-${uboot_version}"
   make distclean
   make "${uboot_config}"
-  BL31="../arm-trusted-firmware-${atf_version}/${atf_build_binary}" make
+  if [[ -n "${atf_build_binary" ]] ; then
+    BL31="../arm-trusted-firmware-${atf_version}/${atf_build_binary}" make
+  else
+    make
+  fi
   popd
 }
 
