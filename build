@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 
-: ${uboot_version:=2020.04}
-: ${atf_version:=2.3}
+: "${uboot_version:=2020.04}"
+: "${atf_version:=2.3}"
 
-[[ ! -n "${platform_name}" ]] && echo "Please define a platform_name." && exit 1
+[[ -z "${platform_name}" ]] && echo "Please define a platform_name." && exit 1
 
 if [[ -f "platforms/${platform_name}" ]] ; then
   source "platforms/${platform_name}"
-  if [[ ! -n "${atf_platform}" ]] || [[ ! -n "${uboot_config}" ]] ; then
+  if [[ -z "${atf_platform}" ]] || [[ -z "${uboot_config}" ]] ; then
     echo "Platform configuration is incomplete."
     exit 1
   fi
@@ -41,7 +41,7 @@ build_uboot() {
   pushd "u-boot-${uboot_version}"
   make distclean
   make "${uboot_config}"
-  if [[ -n "${atf_build_binary" ]] ; then
+  if [[ -n "${atf_build_binary}" ]] ; then
     BL31="../arm-trusted-firmware-${atf_version}/${atf_build_binary}" make
   else
     make
