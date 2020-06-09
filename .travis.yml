@@ -3,7 +3,7 @@ env:
   global:
     - atf_version="2.3"
     - uboot_version="2020.04"
-    - TRAVIS_TAG=${uboot_version}
+    - TRAVIS_TAG=uboot-${uboot_version}-atf-${atf_version}
 
 arch:
   - arm64
@@ -38,8 +38,6 @@ jobs:
         - pushd release
         - tar -cJf tritium-mainline-uboot-${uboot_version}-atf-${atf_version}.tar.xz tritium-mainline-uboot-${uboot_version}-atf-${atf_version}
         - popd
-    - stage: tritium upload to github
-      script: skip
       deploy:
         provider: releases
         api_key:
