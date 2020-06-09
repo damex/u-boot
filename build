@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+
+: ${uboot_version:=2020.04}
+: ${atf_version:=2.3}
+
+[[ ! -n "${platform_name}" ]] && echo "Please define a platform_name." && exit 1
+
+if [[ -f "platforms/${platform_name}" ]] ; then
+  source "platforms/${platform_name}"
+  if [[ ! -n "${atf_platform}" ]] || [[ ! -n "${uboot_config}" ]] ; then
+    echo "Platform configuration is incomplete."
+    exit 1
+  fi
+else
+  echo "Platform configuration does no exist."
+  exit 1
+fi
+
+prepare_atf() {
+  curl -L https://github.com/u-boot/u-boot/archive/v${uboot_version}.tar.gz -o u-boot-${uboot_version}.tar.gz
+  tar xpf u-boot-${uboot_version}.tar.gz
+}
+
+prepare_uboot() {
+  curl -L https://github.com/ARM-software/arm-trusted-firmware/archive/v${atf_version}.tar.gz -o atf-${atf_version}.tar.gz
+  tar xpf atf-${atf_version}.tar.gz
+}
+
+build_atf() {
+  pushd "arm-trusted-firmware-${atf_version}"
+  make PLAT="${atf_platform}" bl31
+  popd
+}
+
+build_uboot() {
+  pushd "u-boot-${uboot_version}"
+  make "${uboot_config}"
+  BL31="../arm-trusted-firmware-${atf_version}/${atf_build_binary}" make
+  popd
+}
+
+prepare_release() {
+  mkdir "${platform_name}-uboot-${uboot_version}-atf-${atf_version}"
+  cp "../u-boot-${uboot_version}/u-boot-sunxi-with-spl.bin" "${platform_name}-mainline-uboot-${uboot_version}-atf-${atf_version}"
+  tar -cJf "${platform_name}-mainline-uboot-${uboot_version}-atf-${atf_version}.tar.xz" "${platform_name}-mainline-uboot-${uboot_version}-atf-${atf_version}"
+}
+
+[[ -n "${1}" ]] && "${1}"

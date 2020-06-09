@@ -22,28 +22,17 @@ jobs:
             - device-tree-compiler
             - swig
       script:
-        - curl -L https://github.com/ARM-software/arm-trusted-firmware/archive/v${atf_version}.tar.gz -o atf-${atf_version}.tar.gz
-        - tar xpf atf-${atf_version}.tar.gz
-        - pushd arm-trusted-firmware-${atf_version}
-        - make PLAT=sun50i_a64 bl31
-        - popd
-        - curl -L https://github.com/u-boot/u-boot/archive/v${uboot_version}.tar.gz -o u-boot-${uboot_version}.tar.gz
-        - tar xpf u-boot-${uboot_version}.tar.gz
-        - pushd u-boot-${uboot_version}
-        - make libretech_all_h3_cc_h5_defconfig
-        - BL31="../arm-trusted-firmware-${atf_version}/build/sun50i_a64/release/bl31.bin" make
-        - popd
-        - mkdir release
-        - pushd release
-        - mkdir tritium-mainline-uboot-${uboot_version}-atf-${atf_version}
-        - cp ../u-boot-${uboot_version}/u-boot-sunxi-with-spl.bin tritium-mainline-uboot-${uboot_version}-atf-${atf_version}
-        - tar -cJf tritium-mainline-uboot-${uboot_version}-atf-${atf_version}.tar.xz tritium-mainline-uboot-${uboot_version}-atf-${atf_version}
-        - popd
+        - export platform_name="tritium"
+        - ./build prepare_atf
+        - ./build build_atf
+        - ./build prepare_uboot
+        - ./build build_uboot
+        - ./build prepare_release
       deploy:
         provider: releases
         api_key:
           secure: ioKF3/+AC4luCu/TgI9WpCr395xE1kQQpdPXv2o37X5efyEF0oRgeQFPMN7IverD4GamwjKFamribv6a47yIs1+GWzpn2pPgYoskt5zK432NSIrWt83VOBwAFhm4VHtnSyjjxqvM22/LD1AJjmdX+Vwys3aJ6dvtkLzqcfz050DrIhkSBkWW+AB4J8nLm6eqm6bQ82ctq+Sl5KMk5VRMq14rzvdAUqylBna6uq3UrwTdFslB1gbw43k1u3J/a1RUPCuP8okng7OPhgqCD/2EeVsw6L7Fc65HoqWJ8oSAnGcYGH2EU07J5p2ziJ7r61Kkd6mGIZYwSkw/R0+P62993FjbFLU9oFub4UekVqdN4hNZhzs42mtV9YuLfS99ru5U+x8dI0yVYSh68bR0/Po7nH6qyyVUPXVBJdokHr8diUI6/mVDL62NXOxFd2Qnaxe0GskqP86RA2ruGEZSXoS2PdGgEV7s08sePir/NPXYYP+hA/7+MwS19EC/i4h7kr0zuwXyXD2vc6b4px3XkNl7if9GZ9/rq5Jj2ScF5dB+PQchyIMLCUhLwq12IiS2TxDrB3AExoEO13m5njSSrsUG5Tskv2ea1JSXoKaKAwg8pFAda15ap/aVVrBeRuZTuoCDwjOznSp4Uqc2aGWCRPzPSJkZIZe1wgD7IvRMPyjIxss=
-        file: release/tritium-mainline-uboot-${uboot_version}-atf-${atf_version}.tar.xz
+        file: tritium-mainline-uboot-${uboot_version}-atf-${atf_version}.tar.xz
         skip_cleanup: true
         overwrite: true
         on:

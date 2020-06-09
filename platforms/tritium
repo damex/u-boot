@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+atf_platform="sun50i_a64"
+atf_build_binary="build/${atf_platform}/release/bl31.bin"
+uboot_config="libretech_all_h3_cc_h5_defconfig"
