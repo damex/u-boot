@@ -32,7 +32,7 @@ jobs:
         - tar xpf u-boot-${uboot_version}.tar.gz
         - pushd u-boot-${uboot_version}
         - make libretech_all_h3_cc_h5_defconfig
-        - BL31="../arm-trusted-firmware-${atf_version}/build/rk3328/release/bl31/bl31.elf" make
+        - BL31="../arm-trusted-firmware-${atf_version}/build/sun50i_a64/release/bl31.bin" make
         - cp u-boot-sunxi-with-spl.bin ../tritium-mainline-uboot-${uboot_version}-atf-${atf_version}
         - popd
         - pushd release
