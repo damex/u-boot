@@ -2,7 +2,7 @@
 env:
   global:
     - atf_version="2.3"
-    - uboot_version="2020.04"
+    - uboot_version="2020.10"
     - TRAVIS_TAG=uboot-${uboot_version}
 
 arch:

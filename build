@@ -35,7 +35,7 @@ uboot_build_binaries["lepotato"]="u-boot.bin"
 atf_version["renegade"]="${atf_version}"
 atf_platform["renegade"]="rk3328"
 atf_build_binary["renegade"]="build/${atf_platform["renegade"]}/release/bl31/bl31.elf"
-uboot_version["renegade"]="2020.07-rc4"
+uboot_version["renegade"]="${uboot_version}"
 uboot_config["renegade"]="roc-cc-rk3328_defconfig"
 uboot_build_binaries["renegade"]="idbloader.img u-boot.itb"
 
@@ -91,7 +91,7 @@ build_uboot() {
 prepare_release() {
   mkdir -p "release"
   pushd "release" || die
-  if [[ -n "${atf_platform["${platform_name}"]}" ]] ; then
+  if [[ -n "${atf_build_binary["${platform_name}"]}" ]] ; then
     release_directory="${platform_name}-uboot-${uboot_version["${platform_name}"]}-atf-${atf_version["${platform_name}"]}"
   else
     release_directory="${platform_name}-uboot-${uboot_version["${platform_name}"]}"
