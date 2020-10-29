@@ -2,7 +2,7 @@
 
 : "${platform_name:=""}"
 : "${atf_version:=2.3}"
-: "${uboot_version:=2020.04}"
+: "${uboot_version:=2020.10}"
 
 declare -A atf_version
 declare -A atf_platform
